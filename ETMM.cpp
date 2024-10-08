@@ -8,9 +8,10 @@ using namespace std;
 
 // Define constants
 const double PI   = 3.141592653589793;
-const double c0   = 3e8;
-const double eps0 = 8.8541878188e-12;
-const double mu0  = 1.25663706127e-6;
+const double c0   = 3e8;                // [m/s] Vacuum Speed of Light
+const double eps0 = 8.8541878188e-12;   // Vacuum Electric Permittivity
+const double mu0  = 1.25663706127e-6;   // Vacuum Magnetic Permeability 
+const double Z0   = 120 * PI;           // [Ohm] Impedance of free space
 
 // Define test variables
 double lambda0 = 1550e-9;   // [m] central wavelength
