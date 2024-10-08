@@ -5,6 +5,7 @@
 #include <vector>
 
 using namespace std;
+using namespace Eigen;
 
 // Define constants
 const double PI   = 3.141592653589793;
@@ -14,21 +15,21 @@ const double mu0  = 1.25663706127e-6;   // Vacuum Magnetic Permeability
 const double Z0   = 120 * PI;           // [Ohm] Impedance of free space
 
 // Define test variables
-double lambda0 = 1550e-9;   // [m] central wavelength
-double omega0  = 2 * PI * c0 / lambda0;
-double n1      = 3.229;     // [-] effective refractive index with layer II-3
-double n2      = 3.225;     // [-] effective refractive index without layer II-3
+double lambda0 = 1550e-9;               // [m] central wavelength
+double omega0  = 2 * PI * c0 / lambda0; // [rad/s] angular frequency of light
+double n1      = 3.229;                 // [-] effective refractive index with layer II-3
+double n2      = 3.225;                 // [-] effective refractive index without layer II-3
 
 // Calculate the vacuum wave number
 double k0      = omega0 * sqrt(mu0 * eps0);
 
 // Calculate relative permittivity (assume mu_r = 1)
-double eps_r1 = pow(n1, 2);
-double eps_r2 = pow(n2, 2);
+double eps_r1 = pow(n1, 2);             // relative permittivity for waveguide slab with layer II-3
+double eps_r2 = pow(n2, 2);             // relative permittivity for waveguide slab without layer II-3
 
 //========================================================================================
 // Define 4x4 Complex Valued Matrix Layer 1
-Eigen::Matrix<complex<double>, 4, 4> Omega_L1
+Matrix<complex<double>, 4, 4> Omega_L1
 {
     {complex<double>(0,0), complex<double>(0,0), complex<double>(0,0), complex<double>(1,0)},
     {complex<double>(0,0), complex<double>(0,0), complex<double>(-1,0), complex<double>(0,0)},
@@ -37,7 +38,7 @@ Eigen::Matrix<complex<double>, 4, 4> Omega_L1
 };
 
 // Define 4x4 Complex Valued Matrix Layer 2
-Eigen::Matrix<complex<double>, 4, 4> Omega_L2
+Matrix<complex<double>, 4, 4> Omega_L2
 {
     {complex<double>(0,0), complex<double>(0,0), complex<double>(0,0), complex<double>(1,0)},
     {complex<double>(0,0), complex<double>(0,0), complex<double>(-1,0), complex<double>(0,0)},
@@ -51,13 +52,13 @@ Eigen::Matrix<complex<double>, 4, 4> Omega_L2
 
 //========================================================================================
 // Use EigenSolver to compute the eigenvalues and eigenvectors for Layer I
-Eigen::ComplexEigenSolver<Eigen::Matrix<std::complex<double>, 4, 4>> solver_L1(Omega_L1);
+ComplexEigenSolver<Matrix<complex<double>, 4, 4>> solver_L1(Omega_L1);
 
 // Get the eigenvector matrix
-Eigen::Matrix<std::complex<double>, 4, 4> W_L1 = solver_L1.eigenvectors();
+Matrix<complex<double>, 4, 4> W_L1 = solver_L1.eigenvectors();
 
 // Get the eigenvalues matrix
-Eigen::Matrix<std::complex<double>, 4,1> Lambda_L1 = solver_L1.eigenvalues();
+Matrix<complex<double>, 4,1> Lambda_L1 = solver_L1.eigenvalues();
 //========================================================================================
 
 
@@ -65,15 +66,22 @@ Eigen::Matrix<std::complex<double>, 4,1> Lambda_L1 = solver_L1.eigenvalues();
 
 //========================================================================================
 // Use EigenSolver to compute the eigenvalues and eigenvectors for Layer II
-Eigen::ComplexEigenSolver<Eigen::Matrix<std::complex<double>, 4, 4>> solver_L2(Omega_L2);
+ComplexEigenSolver<Matrix<complex<double>, 4, 4>> solver_L2(Omega_L2);
 
 // Get the eigenvector matrix
-Eigen::Matrix<std::complex<double>, 4, 4> W_L2 = solver_L2.eigenvectors();
+Matrix<complex<double>, 4, 4> W_L2 = solver_L2.eigenvectors();
 
 // Get the eigenvalues matrix
-Eigen::Matrix<std::complex<double>, 4,1> Lambda_L2 = solver_L2.eigenvalues();
+Matrix<complex<double>, 4,1> Lambda_L2 = solver_L2.eigenvalues();
 //========================================================================================
 
+
+
+
+//========================================================================================
+// Identity Matrices
+Matrix4cd I_L1;
+Matrix4cd I_L2;
 
 
 
@@ -100,6 +108,27 @@ vector<double> linspace(double start, double end, int num) {
 
 int main(){
 
+    //========================================================================================
+    // Construct the Eigenvalue Matrix Layer I
+    I_L1 = Matrix4cd::Identity();
+
+    // Put the Eigenvalues on the Diagonal of the Identity Matrix Layer I
+    for (int i = 0; i < 4; ++i)
+    {
+        I_L1(i,i) = Lambda_L1[i];
+    }
+    //========================================================================================
+    // Construct the Eigenvalue Matrix Layer II
+    I_L2 = Matrix4cd::Identity();
+
+    // Put the Eigenvalues on the Diagonal of the Identity Matrix Layer II
+    for (int i = 0; i < 4; ++i)
+    {
+        I_L2(i,i) = Lambda_L2[i];
+    }
+    //========================================================================================
+    
+
     // HERE STARTS MY LINSPACE TEST CODE
     // Example usage: generate 11 values between 1500 and 1600
     //vector<double> arr = linspace(1500, 1600, 11);
@@ -112,7 +141,7 @@ int main(){
     // HERE ENDS MY LINSPACE TEST CODE
 
     std::cout << Lambda_L2 << std::endl;
-    std::cout << W_L2 << std::endl;
+    std::cout << I_L2 << std::endl;
 
     return 0;
 }
