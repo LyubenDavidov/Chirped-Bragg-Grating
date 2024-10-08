@@ -10,4 +10,4 @@ Source: EM Possible: Computational Electromagnetics: Topic 2: TMM
 
 ## Current Status:
 
-1) Implementation phase.
+1) Need to calculate Poynting vector for each mode and rearrange the column vectors of matrices `W` and `λ`.
