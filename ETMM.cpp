@@ -25,7 +25,7 @@ double k0      = omega0 * sqrt(mu0 * eps0);
 double eps_r1 = pow(n1, 2);
 double eps_r2 = pow(n2, 2);
 
-
+//========================================================================================
 // Define 4x4 Complex Valued Matrix Layer 1
 Eigen::Matrix<complex<double>, 4, 4> Omega_L1
 {
@@ -35,7 +35,6 @@ Eigen::Matrix<complex<double>, 4, 4> Omega_L1
     {complex<double>(-eps_r1,0), complex<double>(0,0), complex<double>(0,0), complex<double>(0,0)}
 };
 
-
 // Define 4x4 Complex Valued Matrix Layer 2
 Eigen::Matrix<complex<double>, 4, 4> Omega_L2
 {
@@ -44,8 +43,40 @@ Eigen::Matrix<complex<double>, 4, 4> Omega_L2
     {complex<double>(0,0), complex<double>(eps_r2,0), complex<double>(0,0), complex<double>(0,0)},
     {complex<double>(-eps_r2,0), complex<double>(0,0), complex<double>(0,0), complex<double>(0,0)}
 };
+//========================================================================================
 
 
+
+
+//========================================================================================
+// Use EigenSolver to compute the eigenvalues and eigenvectors for Layer I
+Eigen::ComplexEigenSolver<Eigen::Matrix<std::complex<double>, 4, 4>> solver_L1(Omega_L1);
+
+// Get the eigenvector matrix
+Eigen::Matrix<std::complex<double>, 4, 4> W_L1 = solver_L1.eigenvectors();
+
+// Get the eigenvalues matrix
+Eigen::Matrix<std::complex<double>, 4,1> Lambda_L1 = solver_L1.eigenvalues();
+//========================================================================================
+
+
+
+
+//========================================================================================
+// Use EigenSolver to compute the eigenvalues and eigenvectors for Layer II
+Eigen::ComplexEigenSolver<Eigen::Matrix<std::complex<double>, 4, 4>> solver_L2(Omega_L2);
+
+// Get the eigenvector matrix
+Eigen::Matrix<std::complex<double>, 4, 4> W_L2 = solver_L2.eigenvectors();
+
+// Get the eigenvalues matrix
+Eigen::Matrix<std::complex<double>, 4,1> Lambda_L2 = solver_L2.eigenvalues();
+//========================================================================================
+
+
+
+
+//========================================================================================
 // Define the linspace function
 vector<double> linspace(double start, double end, int num) {
     vector<double> result;
@@ -61,6 +92,9 @@ vector<double> linspace(double start, double end, int num) {
     }
     return result;
 }
+//========================================================================================
+
+
 
 
 int main(){
@@ -76,7 +110,8 @@ int main(){
     //cout << endl;
     // HERE ENDS MY LINSPACE TEST CODE
 
-    std::cout << Omega_L2 << std::endl;
+    std::cout << Lambda_L2 << std::endl;
+    std::cout << W_L2 << std::endl;
 
     return 0;
 }
