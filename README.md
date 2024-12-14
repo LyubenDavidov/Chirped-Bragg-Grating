@@ -1,4 +1,4 @@
-# Enhanced Transfer Matrix Method
+# Chirped-Bragg Grating Design: Enhanced Transfer Matrix Method
 
 
 
